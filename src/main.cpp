@@ -1,18 +1,30 @@
 #include <iostream>
 #include <Ogre.h>
+#include <OIS.h>
 
 #include "util.h"
 
-class Procedural {
+class Procedural : public Ogre::FrameListener {
 private:
 	Ogre::Root *root;
 	Ogre::SceneManager *scenemanager;
+	Ogre::RenderWindow *window;
+	Ogre::Camera *camera;
+	Ogre::Viewport *viewport;
+
+	OIS::InputManager *inputmanager;
+	OIS::Keyboard *keyboard;
+	OIS::Mouse *mouse;
 
 public:
 	Procedural::Procedural();
 	Procedural::~Procedural();
 	bool run();
 	bool loadConfig();
+	bool renderOneFrame();
+
+protected:
+	virtual bool frameRenderingQueued(const Ogre::FrameEvent &evt);
 };
 
 Procedural::Procedural() {
@@ -21,6 +33,11 @@ Procedural::Procedural() {
 
 Procedural::~Procedural() {
 	delete root;
+	if (inputmanager) {
+		inputmanager->destroyInputObject(mouse);
+		inputmanager->destroyInputObject(keyboard);
+		OIS::InputManager::destroyInputSystem(inputmanager);
+	}
 }
 
 bool Procedural::loadConfig() {
@@ -44,29 +61,58 @@ bool Procedural::loadConfig() {
 bool Procedural::run() {
 	root = new Ogre::Root(PLUGINS_CFG);
 	if (this->loadConfig() != EXIT_SUCCESS) return EXIT_FAILURE;
+	
+	window = root->initialise(true, WINDOW_TITLE);
 
-	Ogre::RenderWindow *window = root->initialise(true, WINDOW_TITLE);
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-
+	
 	scenemanager = root->createSceneManager(Ogre::ST_EXTERIOR_FAR);
-	Ogre::Camera *camera = scenemanager->createCamera("mainCamera");
+	camera = scenemanager->createCamera("mainCamera");
 	camera->setPosition(0, 0, 80);
 	camera->lookAt(0, 0, -300);
 	camera->setNearClipDistance(5);
 
-	Ogre::Viewport *vp = window->addViewport(camera);
-	vp->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
-	camera->setAspectRatio(Ogre::Real(vp->getActualWidth() / Ogre::Real(vp->getActualHeight())));
+	viewport = window->addViewport(camera);
+	viewport->setBackgroundColour(Ogre::ColourValue(1, 0, 0));
+	camera->setAspectRatio(Ogre::Real(viewport->getActualWidth() / Ogre::Real(viewport->getActualHeight())));
 
-	while(true) {
-		Ogre::WindowEventUtilities::messagePump();
-		if (window->isClosed()) return EXIT_SUCCESS;
-	}
+	Ogre::Light* light = scenemanager->createLight("MainLight");
+	light->setPosition(20, 80, 50);
 
+	Ogre::Entity *ogreEntity = scenemanager->createEntity("ogrehead.mesh");
+	Ogre::SceneNode *ogreNode = scenemanager->getRootSceneNode()->createChildSceneNode();
+	ogreNode->attachObject(ogreEntity);
+	 
+	Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
+	OIS::ParamList pl;
+	size_t windowHnd = 0;
+	std::ostringstream windowHndStr;
+	window->getCustomAttribute("WINDOW", &windowHnd);
+	windowHndStr << windowHnd;
+	pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+	inputmanager = OIS::InputManager::createInputSystem(pl);
+	
+	keyboard = static_cast<OIS::Keyboard*>(inputmanager->createInputObject( OIS::OISKeyboard, false ));
+	mouse = static_cast<OIS::Mouse*>(inputmanager->createInputObject( OIS::OISMouse, false ));
+
+	root->addFrameListener(this);
+	root->startRendering();
+	
 	return EXIT_SUCCESS;
 }
 
+bool Procedural::frameRenderingQueued(const Ogre::FrameEvent& evt) {
+    if(window->isClosed()) return false;
+ 
+    keyboard->capture();
+    mouse->capture();
+ 
+    if(keyboard->isKeyDown(OIS::KC_ESCAPE)) return false;
+ 
+    return true;
+}
+	
 int main(int argc, char* argv[]) {
     Procedural *p = new Procedural();
 	try {
