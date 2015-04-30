@@ -21,7 +21,7 @@ file(GLOB CPPS "src/*.cpp")
 set(LIBS optimized OgreMain optimized OgreOverlay optimized OIS) # release libs
 set(LIBS_D debug OgreMain_d debug OgreOverlay_d debug OIS_d) # debug libs 
 
-include_directories("${OGRE_INCLUDE_DIR}" "${OGRE_INCLUDE_DIR}/OIS" "${OGRE_INCLUDE_DIR}/OGRE" "${BOOST_INCLUDE_DIR}")
+include_directories("${OGRE_INCLUDE_DIR}" "${OGRE_INCLUDE_DIR}/OIS" "${OGRE_INCLUDE_DIR}/OGRE" "${OGRE_INCLUDE_DIR}/OGRE/Overlay" "${BOOST_INCLUDE_DIR}")
 link_directories("${OGRE_LIB_DIR}" "${OGRE_LIB_DIR}/Debug" "${OGRE_LIB_DIR}/Release" "${BOOST_LIB_DIR}")
 
 add_executable(Procedural ${CPPS} ${INCS})
