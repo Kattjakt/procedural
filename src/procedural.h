@@ -56,5 +56,8 @@ protected:
 	virtual bool keyReleased(const OIS::KeyEvent& evt);
 
 	virtual bool frameRenderingQueued(const Ogre::FrameEvent &evt);
+
+	virtual void windowResized(Ogre::RenderWindow* window);
+    virtual void windowClosed(Ogre::RenderWindow* window);
 };
 

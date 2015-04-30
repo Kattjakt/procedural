@@ -96,8 +96,8 @@ bool Procedural::go() {
 
 	inputmanager = OIS::InputManager::createInputSystem(pl);
 	
-	keyboard = static_cast<OIS::Keyboard*>(inputmanager->createInputObject( OIS::OISKeyboard, false ));
-	mouse = static_cast<OIS::Mouse*>(inputmanager->createInputObject( OIS::OISMouse, false ));
+	keyboard = static_cast<OIS::Keyboard*>(inputmanager->createInputObject(OIS::OISKeyboard, true));
+	mouse = static_cast<OIS::Mouse*>(inputmanager->createInputObject(OIS::OISMouse, true));
 
 	mouse->setEventCallback(this);
 	keyboard->setEventCallback(this);
@@ -121,7 +121,6 @@ bool Procedural::go() {
     items.push_back("cam.pX");
     items.push_back("cam.pY");
     items.push_back("cam.pZ");
-    items.push_back("");
     items.push_back("cam.oW");
     items.push_back("cam.oX");
     items.push_back("cam.oY");
@@ -131,8 +130,8 @@ bool Procedural::go() {
     items.push_back("Poly Mode");
 
     paramspanel = traymanager->createParamsPanel(OgreBites::TL_NONE, "DetailsPanel", 200, items);
-    paramspanel->setParamValue(9, "Bilinear");
-    paramspanel->setParamValue(10, "Solid");
+    paramspanel->setParamValue(8, "Bilinear");
+    paramspanel->setParamValue(9, "Solid");
 
 	root->addFrameListener(this);
 
@@ -150,26 +149,36 @@ bool Procedural::frameRenderingQueued(const Ogre::FrameEvent& evt) {
  
 	traymanager->frameRenderingQueued(evt);
 	cameraman->frameRenderingQueued(evt);
-	
+
+	if (paramspanel->isVisible()) {
+		paramspanel->setParamValue(0, Ogre::StringConverter::toString(camera->getDerivedPosition().x));
+		paramspanel->setParamValue(1, Ogre::StringConverter::toString(camera->getDerivedPosition().y));
+		paramspanel->setParamValue(2, Ogre::StringConverter::toString(camera->getDerivedPosition().z));
+		paramspanel->setParamValue(3, Ogre::StringConverter::toString(camera->getDerivedOrientation().w));
+		paramspanel->setParamValue(4, Ogre::StringConverter::toString(camera->getDerivedOrientation().x));
+		paramspanel->setParamValue(5, Ogre::StringConverter::toString(camera->getDerivedOrientation().y));
+		paramspanel->setParamValue(6, Ogre::StringConverter::toString(camera->getDerivedOrientation().z));
+	}
+
     if(keyboard->isKeyDown(OIS::KC_ESCAPE)) return false;
  
     return true;
 }
 
-
-
-
 bool Procedural::mousePressed(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
+	if (traymanager->injectMouseDown(evt, id)) return true;
     cameraman->injectMouseDown(evt, id);
     return true;
 }
  
 bool Procedural::mouseReleased(const OIS::MouseEvent& evt, OIS::MouseButtonID id) {
+	if (traymanager->injectMouseUp(evt, id)) return true;
     cameraman->injectMouseUp(evt, id);
     return true;
 }
  
 bool Procedural::mouseMoved(const OIS::MouseEvent& evt) {
+	if (traymanager->injectMouseMove(evt)) return true;
     cameraman->injectMouseMove(evt);
     return true;
 }
@@ -182,4 +191,25 @@ bool Procedural::keyPressed(const OIS::KeyEvent& evt) {
 bool Procedural::keyReleased(const OIS::KeyEvent& evt) {
     cameraman->injectKeyUp(evt);
     return true;
+}
+
+void Procedural::windowResized(Ogre::RenderWindow* window) {
+    unsigned int width, height, depth;
+    int left, top;
+    window->getMetrics(width, height, depth, left, top);
+ 
+    const OIS::MouseState &ms = mouse->getMouseState();
+    ms.width = width;
+    ms.height = height;
+}
+
+void Procedural::windowClosed(Ogre::RenderWindow* window) {
+    if (window == this->window){
+        if (inputmanager){
+            inputmanager->destroyInputObject(mouse);
+            inputmanager->destroyInputObject(keyboard);
+            OIS::InputManager::destroyInputSystem(inputmanager);
+            inputmanager = 0;
+        }
+    }
 }
