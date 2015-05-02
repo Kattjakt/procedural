@@ -69,10 +69,9 @@ bool Procedural::go() {
 	cameraman = new OgreBites::SdkCameraMan(camera);
 
 	viewport = window->addViewport(camera);
-	viewport->setBackgroundColour(Ogre::ColourValue(0.99, 0.98, 0.80));
+//	viewport->setBackgroundColour(Ogre::ColourValue(0.99, 0.98, 0.80));
+	viewport->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
 	camera->setAspectRatio(Ogre::Real(viewport->getActualWidth() / Ogre::Real(viewport->getActualHeight())));
-
-	
 
 	Ogre::OverlaySystem* pOverlaySystem = new Ogre::OverlaySystem();
 	scenemanager->addRenderQueueListener(pOverlaySystem);
@@ -246,6 +245,10 @@ bool Procedural::keyPressed(const OIS::KeyEvent& evt) {
         }
         camera->setPolygonMode(pm);
         paramspanel->setParamValue(9, newVal);
+    }
+
+	else if (evt.key == OIS::KC_M) { // take a screenshot
+		window->writeContentsToTimestampedFile("screenshot-", ".jpg");
     }
 
     return true;
