@@ -118,7 +118,7 @@ bool Procedural::go() {
 	
     traymanager = new OgreBites::SdkTrayManager("InterfaceName", window, input, this);
     traymanager->showFrameStats(OgreBites::TL_BOTTOMLEFT);
-	traymanager->showLogo(OgreBites::TL_BOTTOMRIGHT);
+	traymanager->hideLogo();
     traymanager->hideCursor();
 	
     Ogre::StringVector items;
@@ -136,7 +136,7 @@ bool Procedural::go() {
     paramspanel = traymanager->createParamsPanel(OgreBites::TL_NONE, "DetailsPanel", 200, items);
     paramspanel->setParamValue(8, "Bilinear");
     paramspanel->setParamValue(9, "Solid");
-
+	
 	root->addFrameListener(this);
 
 	Ogre::LogManager::getSingletonPtr()->logMessage("*** Start rendering ***");
@@ -189,6 +189,57 @@ bool Procedural::mouseMoved(const OIS::MouseEvent& evt) {
  
 bool Procedural::keyPressed(const OIS::KeyEvent& evt) {
     cameraman->injectKeyDown(evt);
+	if (evt.key == OIS::KC_T) {
+		Ogre::String newVal;
+        Ogre::TextureFilterOptions tfo;
+        unsigned int aniso;
+        switch (paramspanel->getParamValue(8).asUTF8()[0]) {
+        case 'B':
+            newVal = "Trilinear";
+            tfo = Ogre::TFO_TRILINEAR;
+            aniso = 1;
+            break;
+        case 'T':
+            newVal = "Anisotropic";
+            tfo = Ogre::TFO_ANISOTROPIC;
+            aniso = 8;
+            break;
+        case 'A':
+            newVal = "None";
+            tfo = Ogre::TFO_NONE;
+            aniso = 1;
+            break;
+        default:
+            newVal = "Bilinear";
+            tfo = Ogre::TFO_BILINEAR;
+            aniso = 1;
+        }
+        Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(tfo);
+        Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(aniso);
+        paramspanel->setParamValue(8, newVal);
+	} 
+
+	else if (evt.key == OIS::KC_R) {  // cycle polygon rendering mode
+        Ogre::String newVal;
+        Ogre::PolygonMode pm;
+        switch (camera->getPolygonMode()) {
+        case Ogre::PM_SOLID:
+            newVal = "Wireframe";
+            pm = Ogre::PM_WIREFRAME;
+            break;
+        case Ogre::PM_WIREFRAME:
+            newVal = "Points";
+            pm = Ogre::PM_POINTS;
+            break;
+        default:
+            newVal = "Solid";
+            pm = Ogre::PM_SOLID;
+			break;
+        }
+        camera->setPolygonMode(pm);
+        paramspanel->setParamValue(9, newVal);
+    }
+
     return true;
 }
  
