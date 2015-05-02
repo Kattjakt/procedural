@@ -53,7 +53,11 @@ bool Procedural::go() {
 	root = new Ogre::Root(PLUGINS_CFG);
 	if (this->loadConfig() == EXIT_FAILURE) return EXIT_FAILURE;
 	
-	window = root->initialise(true, WINDOW_TITLE);
+	root->initialise(false, WINDOW_TITLE);
+	Ogre::NameValuePairList misc;
+	misc["FSAA"] = "8";        
+	misc["vsync"] = "true";
+	window = root->createRenderWindow(WINDOW_TITLE, 1024, 768, false, &misc);
 
 	scenemanager = root->createSceneManager(Ogre::ST_GENERIC);
 	scenemanager->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
@@ -65,7 +69,7 @@ bool Procedural::go() {
 	cameraman = new OgreBites::SdkCameraMan(camera);
 
 	viewport = window->addViewport(camera);
-	viewport->setBackgroundColour(Ogre::ColourValue(1, 0, 0));
+	viewport->setBackgroundColour(Ogre::ColourValue(0.99, 0.98, 0.80));
 	camera->setAspectRatio(Ogre::Real(viewport->getActualWidth() / Ogre::Real(viewport->getActualHeight())));
 
 	
