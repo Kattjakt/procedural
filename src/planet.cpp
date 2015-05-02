@@ -12,43 +12,28 @@ void Planet::generate() {
 
 	float c = 0;
 
-	for (int a = 0; a < MAX; a++) {
-		for (int b = 0; b < MAX; b++) {
-			cube->position(a, b, c); //  some side
-		}
-	}
-	
-	for (int a = 0; a < MAX; a++) {
-		for (int b = 0; b < MAX; b++) {
-			cube->position(a, c, b); // bottom
+	float real_x = 0.0f;
+	float real_y = 0.0f;
+	float real_z = 0.0f;
+
+	std::vector<Ogre::Vector3> positions{0};
+	for (float a = 0; a < MAX; a++) {
+		for (float b = 0; b < MAX; b++) {
+			positions.push_back({a, b, c});
+			positions.push_back({a, c, b});
+			positions.push_back({c, a, b});
+			positions.push_back({a, c + MAX - 1, b});
+			positions.push_back({c + MAX - 1, a, b});
+			positions.push_back({a, b, c + MAX - 1});
 		}
 	}
 
-	for (int a = 0; a < MAX; a++) {
-		for (int b = 0; b < MAX; b++) {
-			cube->position(c, a, b); //  some side
+	for (int face = 0; face < 6; face++) {
+		// get the shit into the right shitorder
+		for (int n = 0; n < pow(MAX, 2); n++) {	
+			cube->position(positions.at((6 * n) + face));
 		}
-	}
 
-	for (int a = 0; a < MAX; a++) {
-		for (int b = 0; b < MAX; b++) {
-			cube->position(a, c + MAX - 1, b); // top
-		}
-	}
-
-	for (int a = 0; a < MAX; a++) {
-		for (int b = 0; b < MAX; b++) {
-			cube->position(c + MAX - 1, a, b); //  some side
-		}
-	}
-
-	for (int a = 0; a < MAX; a++) {
-		for (int b = 0; b < MAX; b++) {
-			cube->position(a, b, c + MAX - 1); //  some side
-		}
-	}
-
-	for (int face = 0; face <= 5; face++) {
 		for (int x = 0; x < MAX - 1; x++) {
 			for (int y = 0; y < MAX - 1; y++) {
 				cube->quad( 
