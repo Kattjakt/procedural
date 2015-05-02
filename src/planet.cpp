@@ -10,25 +10,22 @@ void Planet::generate() {
 
 #define MAX 20
 
-
-	float real_x = 0.0f;
-	float real_y = 0.0f;
-	float real_z = 0.0f;
+	Ogre::Vector3 position{0.0f, 0.0f, 0.0f};
 
 	std::vector<Ogre::Vector3> positions{0};
-	for (float a = 0; a < MAX; a++) {
-		for (float b = 0; b < MAX; b++) {
+	for (float x = 0; x < MAX; x++) {
+		for (float y = 0; y < MAX; y++) {
 
-			float _a = real_x - (MAX / 2.0f) + a;
-			float _b = real_y - (MAX / 2.0f) + b;
-			float _c = real_z - (MAX / 2.0f) + 0.0f;
+			float pos_x = position.x - (MAX / 2.0f);
+			float pos_y = position.y - (MAX / 2.0f);
+			float pos_z = position.z - (MAX / 2.0f);
 
-			positions.push_back({_a, _b, _c});
-			positions.push_back({_a, _c, _b});
-			positions.push_back({_c, _a, _b});
-			positions.push_back({_a, _c + MAX - 1, _b});
-			positions.push_back({_c + MAX - 1, _a, _b});
-			positions.push_back({_a, _b, _c + MAX - 1});
+			positions.push_back({x + pos_x, y + pos_y, pos_z});
+			positions.push_back({x + pos_x, pos_y, y + pos_z});
+			positions.push_back({pos_x, x + pos_y, y + pos_z});
+			positions.push_back({x + pos_x, pos_y + MAX - 1, y + pos_z});
+			positions.push_back({pos_x + MAX - 1, x + pos_y, y + pos_z});
+			positions.push_back({x + pos_x, y + pos_y, pos_z + MAX - 1});
 		}
 	}
 
