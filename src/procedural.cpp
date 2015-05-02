@@ -248,7 +248,7 @@ bool Procedural::keyPressed(const OIS::KeyEvent& evt) {
     }
 
 	else if (evt.key == OIS::KC_M) { // take a screenshot
-		window->writeContentsToTimestampedFile("screenshot-", ".jpg");
+		window->writeContentsToTimestampedFile("screenshot-", ".png");
     }
 
     return true;
