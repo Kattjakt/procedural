@@ -4,6 +4,18 @@ Planet::Planet(float radius) {
 	this->radius = radius;
 }
 
+Ogre::Vector3 Planet::map(Ogre::Vector3 pos) {
+	float length = pos.normalise();
+	Ogre::Vector3 temp = pos / length;
+	
+	// map cube to unit sphere
+	pos.x = temp.x * sqrtf(1.0 - (temp.y*temp.y/2.0) - (temp.z*temp.z/2.0) + (temp.y*temp.y*temp.z*temp.z/3.0));
+    pos.y = temp.y * sqrtf(1.0 - (temp.z*temp.z/2.0) - (temp.x*temp.x/2.0) + (temp.z*temp.z*temp.x*temp.x/3.0));
+    pos.z = temp.z * sqrtf(1.0 - (temp.x*temp.x/2.0) - (temp.y*temp.y/2.0) + (temp.x*temp.x*temp.y*temp.y/3.0));
+	
+	return pos * length * this->radius;
+}
+
 void Planet::generate() {
 	cube = new Ogre::ManualObject("Planet");
 	cube->begin("DebugGreenWireframe", Ogre::RenderOperation::OT_TRIANGLE_LIST); 
@@ -20,12 +32,12 @@ void Planet::generate() {
 			float pos_y = position.y - (MAX / 2.0f);
 			float pos_z = position.z - (MAX / 2.0f);
 
-			positions.push_back({x + pos_x, y + pos_y, pos_z});
-			positions.push_back({x + pos_x, pos_y, y + pos_z});
-			positions.push_back({pos_x, x + pos_y, y + pos_z});
-			positions.push_back({x + pos_x, pos_y + MAX - 1, y + pos_z});
-			positions.push_back({pos_x + MAX - 1, x + pos_y, y + pos_z});
-			positions.push_back({x + pos_x, y + pos_y, pos_z + MAX - 1});
+			positions.push_back(map({pos_x + x,       pos_y + y,          pos_z}));
+			positions.push_back(map({pos_x + x,       pos_y,              pos_z + y}));
+			positions.push_back(map({pos_x,           pos_y + x,          pos_z + y}));
+			positions.push_back(map({pos_x + x,       pos_y + MAX - 1,    pos_z + y}));
+			positions.push_back(map({pos_x + MAX-1,   pos_y + x,          pos_z + y}));
+			positions.push_back(map({pos_x + x,       pos_y + y,          pos_z + MAX - 1}));
 		}
 	}
 

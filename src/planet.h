@@ -11,5 +11,5 @@ public:
 	Planet(float radius);
 	void generate();
 	Ogre::ManualObject* getManual();
-	
+	Ogre::Vector3 map(Ogre::Vector3 val);
 };
