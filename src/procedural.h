@@ -9,17 +9,17 @@
 #include <OgreRenderWindow.h>
 #include <OgreConfigFile.h>
  
-
 #include <OISEvents.h>
 #include <OISInputManager.h>
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
-
 #include <SdkTrays.h>
 #include <SdkCameraMan.h>
 
 #include "util.h"
+
+#include "planet.h"
 
 class Procedural : 
 	public Ogre::FrameListener, 
@@ -33,6 +33,9 @@ public:
 	virtual ~Procedural();
 	bool go();
 	bool loadConfig();
+
+private:
+	Planet *planet;
 
 protected:
 	Ogre::Root *root;

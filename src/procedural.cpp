@@ -82,12 +82,13 @@ bool Procedural::go() {
 
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
+	Ogre::MaterialPtr DebugGreenWireframe = Ogre::MaterialManager::getSingleton().create("DebugGreenWireframe", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+	DebugGreenWireframe->setAmbient(Ogre::ColourValue(0,1,0));
+	DebugGreenWireframe->getTechnique(0)->getPass(0)->setPolygonMode(Ogre::PM_WIREFRAME);
+	DebugGreenWireframe->setDiffuse(Ogre::ColourValue(0,1,0)); 
+
 	Ogre::Light* light = scenemanager->createLight("MainLight");
 	light->setPosition(20, 80, 50);
-
-	Ogre::Entity *ogreEntity = scenemanager->createEntity("ogrehead.mesh");
-	Ogre::SceneNode *ogreNode = scenemanager->getRootSceneNode()->createChildSceneNode();
-	ogreNode->attachObject(ogreEntity);
 	 
 	Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
 	OIS::ParamList pl;
@@ -137,6 +138,13 @@ bool Procedural::go() {
     paramspanel->setParamValue(8, "Bilinear");
     paramspanel->setParamValue(9, "Solid");
 	
+	Ogre::SceneNode* mNode = scenemanager->getRootSceneNode()->createChildSceneNode();
+	mNode->setPosition(0,0.5,0);
+
+	planet = new Planet(10.0f);	
+	planet->generate();
+	mNode->attachObject(planet->getManual());   
+
 	root->addFrameListener(this);
 
 	Ogre::LogManager::getSingletonPtr()->logMessage("*** Start rendering ***");
