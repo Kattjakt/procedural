@@ -85,6 +85,7 @@ bool Procedural::go() {
 	DebugGreenWireframe->setAmbient(Ogre::ColourValue(0,1,0));
 	DebugGreenWireframe->getTechnique(0)->getPass(0)->setPolygonMode(Ogre::PM_WIREFRAME);
 	DebugGreenWireframe->setDiffuse(Ogre::ColourValue(0,1,0)); 
+	DebugGreenWireframe->setCullingMode(Ogre::CullingMode::CULL_NONE);
 
 	Ogre::Light* light = scenemanager->createLight("MainLight");
 	light->setPosition(20, 80, 50);
