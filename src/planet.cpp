@@ -10,7 +10,6 @@ void Planet::generate() {
 
 #define MAX 20
 
-	float c = 0;
 
 	float real_x = 0.0f;
 	float real_y = 0.0f;
@@ -19,12 +18,17 @@ void Planet::generate() {
 	std::vector<Ogre::Vector3> positions{0};
 	for (float a = 0; a < MAX; a++) {
 		for (float b = 0; b < MAX; b++) {
-			positions.push_back({a, b, c});
-			positions.push_back({a, c, b});
-			positions.push_back({c, a, b});
-			positions.push_back({a, c + MAX - 1, b});
-			positions.push_back({c + MAX - 1, a, b});
-			positions.push_back({a, b, c + MAX - 1});
+
+			float _a = real_x - (MAX / 2.0f) + a;
+			float _b = real_y - (MAX / 2.0f) + b;
+			float _c = real_z - (MAX / 2.0f) + 0.0f;
+
+			positions.push_back({_a, _b, _c});
+			positions.push_back({_a, _c, _b});
+			positions.push_back({_c, _a, _b});
+			positions.push_back({_a, _c + MAX - 1, _b});
+			positions.push_back({_c + MAX - 1, _a, _b});
+			positions.push_back({_a, _b, _c + MAX - 1});
 		}
 	}
 
