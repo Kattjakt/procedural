@@ -65,7 +65,7 @@ bool Procedural::go() {
 	camera = scenemanager->createCamera("mainCamera");
 	camera->setPosition(0, 0, 80);
 	camera->lookAt(0, 0, -300);
-	camera->setNearClipDistance(5);
+	camera->setNearClipDistance(0.001);
 	cameraman = new OgreBites::SdkCameraMan(camera);
 
 	viewport = window->addViewport(camera);
@@ -83,9 +83,9 @@ bool Procedural::go() {
 
 	Ogre::MaterialPtr DebugGreenWireframe = Ogre::MaterialManager::getSingleton().create("DebugGreenWireframe", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	DebugGreenWireframe->setAmbient(Ogre::ColourValue(0,1,0));
-	DebugGreenWireframe->getTechnique(0)->getPass(0)->setPolygonMode(Ogre::PM_WIREFRAME);
+	DebugGreenWireframe->getTechnique(0)->getPass(0)->setPolygonMode(Ogre::PM_SOLID);
 	DebugGreenWireframe->setDiffuse(Ogre::ColourValue(0,1,0)); 
-	DebugGreenWireframe->setCullingMode(Ogre::CullingMode::CULL_NONE);
+	DebugGreenWireframe->setCullingMode(Ogre::CullingMode::CULL_CLOCKWISE);
 
 	Ogre::Light* light = scenemanager->createLight("MainLight");
 	light->setPosition(20, 80, 50);
@@ -144,6 +144,7 @@ bool Procedural::go() {
 	planet = new Planet(10.0f);	
 	planet->generate();
 	mNode->attachObject(planet->getManual());   
+	mNode->showBoundingBox(true);
 
 	root->addFrameListener(this);
 

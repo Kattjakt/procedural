@@ -34,18 +34,18 @@ void Planet::generate() {
 
 			// map planes into to a 6-faced cube
 			std::vector<Ogre::Vector3> temp;
-			temp.push_back(map({x - offset,         y - offset,         0.0f - offset}));
-			temp.push_back(map({x - offset,         0.0f - offset,      y - offset}));
-			temp.push_back(map({0.0f - offset,      x - offset,         y - offset}));
-			temp.push_back(map({x - offset,         MAX - 1- offset,    y - offset}));
-			temp.push_back(map({MAX - 1 - offset,   x - offset,         y - offset}));
-			temp.push_back(map({x - offset,         y - offset,         MAX - 1 - offset}));
-	
+			temp.push_back(map({x - offset,         y - offset,         MAX - 1 - offset}));    // side ( ^ )
+			temp.push_back(map({x - offset,         0.0f - offset,      y - offset}));          // bottom
+			temp.push_back(map({0.0f - offset,      x - offset,         y - offset}));          // side ( < )
+			temp.push_back(map({x - offset,         MAX - 1- offset,    y - offset}));          // top		
+			temp.push_back(map({MAX - 1 - offset,   x - offset,         y - offset}));          // side ( > )
+			temp.push_back(map({x - offset,         y - offset,         0.0f - offset}));       // side ( v )
+
 			// add world coordinates
 			for (int i = 0; i < 6; i++) {
 				positions.push_back({
 					temp.at(i).x + position.x, 
-					temp.at(i).y + position.y, 
+					temp.at(i).y + position.y,
 					temp.at(i).z + position.z
 				});
 			}
@@ -60,13 +60,28 @@ void Planet::generate() {
 
 		for (int x = 0; x < MAX - 1; x++) {
 			for (int y = 0; y < MAX - 1; y++) {
-				manual->quad( 
-					//   vertex offset           local offset
-					(pow(MAX, 2) * face) + ((y + 1) * MAX) + x + 1,
-					(pow(MAX, 2) * face) + (y* MAX) + x + 1,
-					(pow(MAX, 2) * face) + (y* MAX) + x, 
-					(pow(MAX, 2) * face) + ((y + 1) * MAX) + x
-				);
+				// some faces needs to be applied backwards due to culling
+				switch (face) {
+				case 2:
+				case 3:
+				case 5:
+					manual->quad( 
+						(pow(MAX, 2) * face) + ((y + 1) * MAX) + x,
+						(pow(MAX, 2) * face) + (y* MAX) + x, 
+						(pow(MAX, 2) * face) + (y* MAX) + x + 1,
+						(pow(MAX, 2) * face) + ((y + 1) * MAX) + x + 1
+					);
+					break;
+
+				default:
+					manual->quad( 
+						(pow(MAX, 2) * face) + ((y + 1) * MAX) + x + 1,
+						(pow(MAX, 2) * face) + (y* MAX) + x + 1,
+						(pow(MAX, 2) * face) + (y* MAX) + x, 
+						(pow(MAX, 2) * face) + ((y + 1) * MAX) + x
+					);
+				}
+
 			}
 		}
 	}
