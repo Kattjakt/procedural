@@ -5,6 +5,9 @@ Planet::Planet(float radius) {
 }
 
 Ogre::Vector3 Planet::map(Ogre::Vector3 pos) {
+#if PLANET_CUBE
+	return pos;
+#endif
 	float length = pos.normalise();
 	Ogre::Vector3 temp = pos / length;
 	
