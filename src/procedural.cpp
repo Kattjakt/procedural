@@ -159,6 +159,8 @@ bool Procedural::frameRenderingQueued(const Ogre::FrameEvent& evt) {
     keyboard->capture();
     mouse->capture();
  
+	planet->update(camera->getPosition());
+
 	traymanager->frameRenderingQueued(evt);
 	cameraman->frameRenderingQueued(evt);
 

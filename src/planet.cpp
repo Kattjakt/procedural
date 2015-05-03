@@ -20,12 +20,12 @@ Ogre::Vector3 Planet::map(Ogre::Vector3 pos) {
 }
 
 void Planet::generate() {
-	cube = new Ogre::ManualObject("Planet");
-	cube->begin("DebugGreenWireframe", Ogre::RenderOperation::OT_TRIANGLE_LIST); 
+	manual = new Ogre::ManualObject("Planet");
+	manual->begin("DebugGreenWireframe", Ogre::RenderOperation::OT_TRIANGLE_LIST); 
 
 #define MAX 20
 
-	Ogre::Vector3 position{0.0f, 0.0f, 0.0f};
+	position = {0.0f, 0.0f, 0.0f};
 	std::vector<Ogre::Vector3> positions;
 	float offset = (MAX / 2.0f);
 
@@ -55,12 +55,12 @@ void Planet::generate() {
 	for (int face = 0; face < 6; face++) {
 		// get the shit into the right shitorder
 		for (int n = 0; n < pow(MAX, 2); n++) {	
-			cube->position(positions.at((6 * n) + face));
+			manual->position(positions.at((6 * n) + face));
 		}
 
 		for (int x = 0; x < MAX - 1; x++) {
 			for (int y = 0; y < MAX - 1; y++) {
-				cube->quad( 
+				manual->quad( 
 					//   vertex offset           local offset
 					(pow(MAX, 2) * face) + ((y + 1) * MAX) + x + 1,
 					(pow(MAX, 2) * face) + (y* MAX) + x + 1,
@@ -71,9 +71,15 @@ void Planet::generate() {
 		}
 	}
 
-	cube->end();
+	manual->end();
+}
+
+void Planet::update(Ogre::Vector3 camera) {
+	// std::cout << "Distance: " << camera.distance(this->position) << std::endl;
+	float distance = camera.distance(this->position);
+
 }
 
 Ogre::ManualObject* Planet::getManual() {
-	return this->cube;
+	return this->manual;
 }
