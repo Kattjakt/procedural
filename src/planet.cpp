@@ -23,21 +23,29 @@ void Planet::generate() {
 #define MAX 20
 
 	Ogre::Vector3 position{0.0f, 0.0f, 0.0f};
+	std::vector<Ogre::Vector3> positions;
+	float offset = (MAX / 2.0f);
 
-	std::vector<Ogre::Vector3> positions{0};
 	for (float x = 0; x < MAX; x++) {
 		for (float y = 0; y < MAX; y++) {
 
-			float pos_x = position.x - (MAX / 2.0f);
-			float pos_y = position.y - (MAX / 2.0f);
-			float pos_z = position.z - (MAX / 2.0f);
-
-			positions.push_back(map({pos_x + x,       pos_y + y,          pos_z}));
-			positions.push_back(map({pos_x + x,       pos_y,              pos_z + y}));
-			positions.push_back(map({pos_x,           pos_y + x,          pos_z + y}));
-			positions.push_back(map({pos_x + x,       pos_y + MAX - 1,    pos_z + y}));
-			positions.push_back(map({pos_x + MAX-1,   pos_y + x,          pos_z + y}));
-			positions.push_back(map({pos_x + x,       pos_y + y,          pos_z + MAX - 1}));
+			// map planes into to a 6-faced cube
+			std::vector<Ogre::Vector3> temp;
+			temp.push_back(map({x - offset,         y - offset,         0.0f - offset}));
+			temp.push_back(map({x - offset,         0.0f - offset,      y - offset}));
+			temp.push_back(map({0.0f - offset,      x - offset,         y - offset}));
+			temp.push_back(map({x - offset,         MAX - 1- offset,    y - offset}));
+			temp.push_back(map({MAX - 1 - offset,   x - offset,         y - offset}));
+			temp.push_back(map({x - offset,         y - offset,         MAX - 1 - offset}));
+	
+			// add world coordinates
+			for (int i = 0; i < 6; i++) {
+				positions.push_back({
+					temp.at(i).x + position.x, 
+					temp.at(i).y + position.y, 
+					temp.at(i).z + position.z
+				});
+			}
 		}
 	}
 
